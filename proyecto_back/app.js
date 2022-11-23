@@ -6,11 +6,15 @@ var logger = require('morgan');
 
 // Conexion a carpeta config///
 var database = require('./config/database');
-////////////////////////////////////////////
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-/******************************** */
+
+//Auth
+var auth = require("./auth/main_auth");
+// cors
+var cors = require('cors')
+
 var empleadosRouter = require('./routes/empleados.router');
+var pacientesRouter = require('./routes/pacientes.router');
+var usuariosRouter = require('./routes/usuarios.router');
 
 var app = express();
 
@@ -22,13 +26,24 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(cors())
+
 // Mongo connection////
 database.mongoConnect();
 
+// Router usuarios
+app.use('/usuarios', usuariosRouter);
+
+// AUTH
+app.use(auth);
+
 // Router
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
 app.use('/empleados', empleadosRouter);
+app.use('/pacientes', pacientesRouter); 
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
